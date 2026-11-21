@@ -1,0 +1,23 @@
+CROWN BOT — PRÉPARATION HÉBERGEMENT
+
+État : archive préparée, bot non déployé. Un hébergeur capable de faire tourner un processus Node.js permanent est nécessaire.
+Le site VQH actuel sauvegarde des configurations mais ne possède pas de serveur d'exécution.
+
+Configuration à utiliser sur l'hébergeur :
+- Type : bot Discord / Node.js
+- Version : Node.js 22 ou version LTS compatible
+- Installation : npm ci --omit=dev
+- Démarrage : npm start (node index.js)
+- Fichier principal : index.js
+- Redémarrage automatique : à activer dans le panel
+- Stockage persistant : conserver crown.db.json à chaque redémarrage et déploiement
+- Une seule instance du bot, car les données sont enregistrées dans un fichier JSON local
+
+Le fichier .env du PC est volontairement exclu de cette archive.
+Les variables attendues figurent dans .env.example : renseigner leurs valeurs dans la zone de secrets de l'hébergeur, ou dans un fichier .env privé sur le serveur.
+Ne pas publier le token dans le site, une capture d'écran ou un dépôt public.
+
+Le fichier crown.db.json inclus contient les réglages actuels du bot. Le fichier crown.db n'est pas utilisé par database.js et n'est pas inclus.
+Conserver une sauvegarde régulière du fichier JSON. Vérifier les intents demandés par index.js dans le portail développeur Discord si Discord refuse la connexion.
+
+Cette préparation ne loue aucun serveur et ne lance aucune seconde instance sur le PC.

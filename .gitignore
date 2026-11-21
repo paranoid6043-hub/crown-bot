@@ -1,0 +1,4 @@
+node_modules/
+.env
+crown.db
+crown.db.json

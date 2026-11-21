@@ -1,0 +1,17 @@
+CROWN BOT — HÉBERGEMENT ACTIF
+
+Déploiement effectué le 16 novembre 2026.
+Panel : https://bot-hosting.net/dash/deployments/11ebd414-8adc-4aa8-917c-67f287f97e5d
+
+Vérification : la console confirme la connexion du bot à Discord et le chargement de 95 commandes.
+Node.js 22, offre Free : 256 Mo de RAM, 25 % CPU, 512 Mo de stockage.
+DISCORD_TOKEN et CLIENT_ID sont configurés dans les variables secrètes de l'hébergeur.
+Aucun token n'est enregistré dans ce document.
+
+Le bot tourne sur la machine de Bot-Hosting.net : le PC personnel peut être éteint.
+Fermer l'ancienne instance locale du bot pour éviter d'exécuter deux copies en même temps.
+L'offre gratuite annonce un renouvellement manuel tous les 4 jours : vérifier et renouveler depuis le tableau de bord.
+Un service gratuit ne garantit pas une disponibilité permanente.
+
+Les données du bot se trouvent dans crown.db.json sur l'hébergeur. Les sauvegarder avant une réinstallation.
+Les modifications faites au code sur le PC ne sont pas transférées automatiquement sur l'hébergeur.
