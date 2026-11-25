@@ -1,6 +1,7 @@
 const { parseUser } = require('../../utils/parsers');
 const E = require('../../utils/embeds');
 const { db } = require('../../database');
+const { logMod } = require('../../systems/logs');
 
 module.exports = {
   name: 'ban',
@@ -37,6 +38,8 @@ module.exports = {
         { name: 'Raison', value: reason },
       )
       .setTimestamp();
+
+    logMod(message.guild, { action: 'Ban', moderator: message.author, target: `<@${userId}>`, reason });
 
     return message.reply({ embeds: [embed] });
   },

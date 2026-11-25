@@ -13,6 +13,7 @@ const client = new Client({
     GatewayIntentBits.GuildMessageReactions,
     GatewayIntentBits.GuildPresences,
     GatewayIntentBits.GuildInvites,
+    GatewayIntentBits.GuildModeration,
   ],
   partials: [Partials.Message, Partials.Reaction, Partials.Channel],
 });
@@ -47,6 +48,9 @@ for (const file of systems) {
   const system = require(path.join(__dirname, 'systems', file));
   if (system.init) system.init(client);
 }
+
+const { initAutoLogs } = require('./systems/logs');
+initAutoLogs(client);
 
 client.once(Events.ClientReady, async (c) => {
   console.log(`Bot connecté en tant que ${c.user.tag}`);

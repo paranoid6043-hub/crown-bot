@@ -1,6 +1,7 @@
 const { parseUser, parseDuration, formatDuration } = require('../../utils/parsers');
 const E = require('../../utils/embeds');
 const { db } = require('../../database');
+const { logMod } = require('../../systems/logs');
 
 module.exports = {
   name: 'timeout',
@@ -36,6 +37,8 @@ module.exports = {
         { name: 'Raison', value: reason },
       )
       .setTimestamp();
+
+    logMod(message.guild, { action: 'Timeout', moderator: message.author, target: `<@${userId}>`, reason, duration: formatDuration(duration) });
 
     return message.reply({ embeds: [embed] });
   },

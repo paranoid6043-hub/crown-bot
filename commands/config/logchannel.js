@@ -1,12 +1,24 @@
 const { db } = require('../../database');
 const { success, error, info } = require('../../utils/embeds');
 const { parseChannel } = require('../../utils/parsers');
+const { EmbedBuilder } = require('discord.js');
+const config = require('../../config');
+
+const TYPES = {
+  mod: { col: 'mod_channel', label: 'Modération' },
+  messages: { col: 'messages_channel', label: 'Messages' },
+  voice: { col: 'voice_channel', label: 'Vocal' },
+  members: { col: 'members_channel', label: 'Membres' },
+  server: { col: 'server_channel', label: 'Serveur' },
+  roles: { col: 'roles_channel', label: 'Rôles' },
+  internal: { col: 'internal_channel', label: 'Interne' },
+};
 
 module.exports = {
   name: 'logchannel',
   aliases: ['logs', 'setlogs'],
   description: 'Configure les salons de logs',
-  usage: '&logchannel mod #salon | &logchannel internal #salon | &logchannel off',
+  usage: '&logchannel <type> #salon | &logchannel off | &logchannel status',
   permission: 'Sys+',
   category: 'Niveaux & Configuration',
 
@@ -15,23 +27,41 @@ module.exports = {
 
     if (type === 'off') {
       db.prepare('DELETE FROM logs_config WHERE guild_id = ?').run(message.guild.id);
-      return message.reply({ embeds: [success('Logs desactives.')] });
+      return message.reply({ embeds: [success('Tous les logs désactivés.')] });
     }
 
-    if (type === 'mod') {
-      const channelId = parseChannel(args[1]);
-      if (!channelId) return message.reply({ embeds: [error('Mentionne un salon.')] });
-      db.prepare('INSERT INTO logs_config (guild_id, mod_channel) VALUES (?, ?) ON CONFLICT (guild_id) DO UPDATE SET mod_channel = excluded.mod_channel').run(message.guild.id, channelId);
-      return message.reply({ embeds: [success(`Logs de moderation dans <#${channelId}>.`)] });
+    if (!type || type === 'status') {
+      const row = db.prepare('SELECT * FROM logs_config WHERE guild_id = ?').get(message.guild.id);
+      if (!row) return message.reply({ embeds: [info('Aucun log configuré. Utilise `&autologs` pour tout créer automatiquement.')] });
+
+      const e = new EmbedBuilder()
+        .setColor(config.accentColor)
+        .setTitle('📜 Configuration des logs');
+
+      for (const [key, t] of Object.entries(TYPES)) {
+        const channelId = row[t.col];
+        e.addFields({
+          name: t.label,
+          value: channelId ? `<#${channelId}>` : '`❌` Non configuré',
+          inline: true,
+        });
+      }
+
+      e.setFooter({ text: '&autologs pour tout créer | &logchannel <type> #salon | &logchannel off' });
+      return message.reply({ embeds: [e] });
     }
 
-    if (type === 'internal') {
-      const channelId = parseChannel(args[1]);
-      if (!channelId) return message.reply({ embeds: [error('Mentionne un salon.')] });
-      db.prepare('INSERT INTO logs_config (guild_id, internal_channel) VALUES (?, ?) ON CONFLICT (guild_id) DO UPDATE SET internal_channel = excluded.internal_channel').run(message.guild.id, channelId);
-      return message.reply({ embeds: [success(`Logs internes dans <#${channelId}>.`)] });
+    const typeInfo = TYPES[type];
+    if (!typeInfo) {
+      const types = Object.keys(TYPES).join(', ');
+      return message.reply({ embeds: [info(`Types disponibles: \`${types}\`\n\n\`&logchannel <type> #salon\` — configurer un type\n\`&logchannel off\` — tout désactiver\n\`&logchannel status\` — voir la config\n\`&autologs\` — tout créer automatiquement`)] });
     }
 
-    message.reply({ embeds: [info('`&logchannel mod #salon` — Logs de moderation\n`&logchannel internal #salon` — Logs internes du bot\n`&logchannel off` — Desactiver')] });
+    const channelId = parseChannel(args[1]);
+    if (!channelId) return message.reply({ embeds: [error('Mentionne un salon.')] });
+
+    const col = typeInfo.col;
+    db.prepare(`INSERT INTO logs_config (guild_id, ${col}) VALUES (?, ?) ON CONFLICT (guild_id) DO UPDATE SET ${col} = excluded.${col}`).run(message.guild.id, channelId);
+    return message.reply({ embeds: [success(`Logs **${typeInfo.label}** configurés dans <#${channelId}>.`)] });
   },
 };

@@ -1,6 +1,7 @@
 const { parseUser } = require('../../utils/parsers');
 const E = require('../../utils/embeds');
 const { db } = require('../../database');
+const { logMod } = require('../../systems/logs');
 
 module.exports = {
   name: 'kick',
@@ -32,6 +33,8 @@ module.exports = {
         { name: 'Raison', value: reason },
       )
       .setTimestamp();
+
+    logMod(message.guild, { action: 'Kick', moderator: message.author, target: member.user, reason });
 
     return message.reply({ embeds: [embed] });
   },

@@ -9,7 +9,7 @@ let data = {
   follows: [], punished: [], busy: [], watched: [], reminders: [],
   staff_config: [], backup_channels: [], backup_perms: [],
   vocaux_perso_config: [], vocaux_perso: [], sticky_roles: [], museliere: [],
-  warns: [], tempbans: [], notes: [], antiraid_config: [], logs_config: [],
+  warns: [], tempbans: [], notes: [], antiraid_config: [], antiraid_whitelist: [], logs_config: [],
   tickets_config: [], tickets: [], rolemenu: [], rolemenu_roles: [],
   invite_data: [], invite_rewards: [], modmail_config: [], modmail_threads: [],
   counters: [], custom_commands: [], locknames: [],
@@ -49,6 +49,7 @@ const PK = {
   museliere: ['user_id', 'guild_id'],
   giveaway_entries: ['giveaway_id', 'user_id'],
   antiraid_config: ['guild_id'],
+  antiraid_whitelist: ['guild_id', 'type', 'target_id'],
   logs_config: ['guild_id'],
   tickets_config: ['guild_id'],
   invite_data: ['user_id', 'guild_id'],
@@ -184,6 +185,7 @@ class Stmt {
             return { changes: 1, lastInsertRowid: row.id || 0 };
           }
           if (conflict) {
+            if (up.includes('DO NOTHING')) { save(); return { changes: 0, lastInsertRowid: data[t][idx].id || 0 }; }
             const setM = this.sql.match(/DO\s+UPDATE\s+SET\s+(.+?)$/i);
             if (setM) {
               const existing = data[t][idx];
